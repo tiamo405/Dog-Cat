@@ -35,6 +35,6 @@ python predict.py --checkpoint_dir checkpoints --name_model resnet101 --num_trai
 ```
 drive/weight/DandC/resnet101/0001/1.pth
 ```
-[link dowload](https://drive.google.com/drive/folders/1kSdUx6yzp7eEaAJrdeA_gsLfgCLT5uWq?usp=sharing)
+[Dowload pretrained](https://drive.google.com/drive/folders/1kSdUx6yzp7eEaAJrdeA_gsLfgCLT5uWq?usp=sharing)
 # Colab
 [Colab demo](https://colab.research.google.com/drive/1bSoSouDuzIPWZ713MrssSIkX_VepZBwW?usp=sharing)
