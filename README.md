@@ -23,6 +23,16 @@ checkpoint_dir __ name_model __ times train __ number epoch.pth
 ex : checkpoints/resnet101/0001/1.pth
 ```
 # 3. Test
+
 ```
 python predict.py --checkpoint_dir checkpoints --name_model resnet101 --num_train 0001 --num_ckpt 1 --image data/test/tai-anh-cho-dep.webp
 ``` 
+* Test on colab
+```
+--checkpoint_dir : drive/weight/DandC
+```
+## Trên drive lưu file weight như sau:
+```
+drive/weight/DandC/resnet101/0001/1.pth
+[link dowload](https://drive.google.com/drive/folders/1kSdUx6yzp7eEaAJrdeA_gsLfgCLT5uWq?usp=sharing)
+```
