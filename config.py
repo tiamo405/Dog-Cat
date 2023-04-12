@@ -1,19 +1,15 @@
 import torch
 config = {
-    1: dict(
+    'train': dict(
     BATCH_SIZE = 16,
     EPOCHS = 20,
     TRAIN_ON = 'ssh',
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
 
-    #dir
-    DATA_ROOT = 'data/train',
-    CHECKPOINT_DIR = 'checkpoints',
-
     #model
-    NAME_MODEL = 'resnet50',# resnet50, alexnet,
+
     NUM_CLASSES = 2,
-    LR = 1e-6,
+    LR = 1e-4,
     NUM_WORKERS = 2,
     NAME_LOSS = 'CrossEntropy', # 'BCEWithLogitsLoss', 'Poly1CrossEntropyLoss', 'ArcFace'
     WEIGHT_DECAY = 5e-4, # do not apply to batch_norm parameters
@@ -28,9 +24,13 @@ config = {
     RESIZE = True,
     LOAD_WIDTH = 224,
     LOAD_HEIGHT = 224,
-    IMG_INPUT = 'img_face',
-    #'img_face', 'img_align', 'img_full','img_full_add_img_align', 'img_face_add_img_align',\
-                #  'img_face_ycbcr', 'img_align_ycbcr'
 
     ),
+    'test' : dict(
+    NUM_CLASSES = 2,
+    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
+    RESIZE = True,
+    LOAD_WIDTH = 224,
+    LOAD_HEIGHT = 224,
+    )
 }

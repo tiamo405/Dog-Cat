@@ -9,7 +9,7 @@ import torchvision
 
 
 def create_model(name_model, num_classes) : 
-    if name_model == 'resnet50' : return resnet.resnet50(num_classes= num_classes)
+    if name_model == 'resnet50' : return resnet.resnet50(num_classes= num_classes, pretrained= False)
     elif name_model =='resnet101' : return resnet.resnet101(num_classes= num_classes)
     elif name_model == 'resnet152' : return resnet.resnet152(num_classes=num_classes)
     

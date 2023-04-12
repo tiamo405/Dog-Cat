@@ -4,7 +4,7 @@ import time
 import torch
 import os
 import copy
-
+import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 from torch.optim import lr_scheduler
@@ -22,23 +22,24 @@ dir_name = os.path.dirname(os.path.realpath(__file__))
 
 
 
-def train(cfg):
+def train(args):
+    cfg = config[args.config]
+
     # khởi tạo các biến
     BATCH_SIZE = cfg['BATCH_SIZE']
     EPOCHS = cfg['EPOCHS']
     TRAIN_ON = cfg['TRAIN_ON']
-    DATA_ROOT = cfg['DATA_ROOT']
-    CHECKPOINT_DIR = cfg['CHECKPOINT_DIR']
+    DATA_ROOT = args.data_root
+    CHECKPOINT_DIR = args.checkpoint_dir
     #model
-    NAME_MODEL =cfg['NAME_MODEL']
+    NAME_MODEL = args.name_model
     NUM_CLASSES = cfg['NUM_CLASSES']
     LR = cfg['LR']
     NUM_WORKERS = cfg['NUM_WORKERS']
     NAME_LOSS = cfg['NAME_LOSS']
     DEVICE = cfg['DEVICE']
     WEIGHT_DECAY = cfg['WEIGHT_DECAY']
-    MOMENTUM = cfg['MOMENTUM']
-    PIN_MEMORY = cfg['PIN_MEMORY']
+
     #ckpt
     NUM_SAVE_CKPT = cfg['NUM_SAVE_CKPT']
     SAVE_CKPT = cfg['SAVE_CKPT']
@@ -47,8 +48,8 @@ def train(cfg):
     LOAD_WIDTH = cfg['LOAD_WIDTH']
     LOAD_HEIGHT = cfg['LOAD_HEIGHT']
 
-    # nơi lưu các file model mỗi lần huấn luyện
-    num_save_file = str(len(os.listdir(os.path.join(CHECKPOINT_DIR, NAME_MODEL)))).zfill(4)
+    os.makedirs(os.path.join(CHECKPOINT_DIR, NAME_MODEL), exist_ok= True)
+    num_save_file = str(len(os.listdir(os.path.join(CHECKPOINT_DIR, NAME_MODEL)))).zfill(4)# nơi lưu các file model mỗi lần huấn luyện
     
     # lưu các biến khởi tạo vào 1 file
     if SAVE_CKPT :
@@ -67,9 +68,9 @@ def train(cfg):
     # batch_size : nhóm các hình ảnh với nhau thành 1 tệp ( ví dụ 16 hình ảnh 1 lúc để học trong 1 lần)
     # 3 cái còn lại đọc docs or chatgpt
     trainLoader = DataLoader(trainDataset, batch_size=BATCH_SIZE, \
-                             shuffle= True, num_workers= NUM_WORKERS, pin_memory= PIN_MEMORY)
+                             shuffle= True, num_workers= NUM_WORKERS)
     valLoader = DataLoader(valDataset, batch_size=BATCH_SIZE, \
-                           shuffle= True, num_workers= NUM_WORKERS, pin_memory= PIN_MEMORY)
+                           shuffle= True, num_workers= NUM_WORKERS)
     dataset_sizes = {
         'train' : len(trainDataset),
         'val' : len(valDataset),
@@ -84,10 +85,15 @@ def train(cfg):
     print("device :", DEVICE)
     
     # 
-    # model = utils_model.create_model(name_model= NAME_MODEL, num_classes= NUM_CLASSES)
-    model = torchvision.models.resnet101(pretrained = True) # khởi tạo mô hình
+    if NAME_MODEL == 'resnet101':
+        model = torchvision.models.resnet101(pretrained = True) # khởi tạo mô hình
+        num_features = model.fc.in_features
+        model.fc = nn.Linear(num_features, 2)
+    else:
+        model = utils_model.create_model(name_model= NAME_MODEL, num_classes= NUM_CLASSES)
+   
     model.to(device= DEVICE) # chuyển mô hình sang sử dungh gpu hay cpu
-
+    print(model)
     criterion = utils_loss.create_loss(name_loss= NAME_LOSS, num_classes= NUM_CLASSES) # khởi tạo hàm tính hàm mất mát
 
     optimizer = torch.optim.Adam(model.parameters(), lr = LR,  weight_decay=WEIGHT_DECAY) # hàm tính đạo hàm
@@ -177,18 +183,18 @@ def train(cfg):
         
 def get_args_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num_config', type= int, default= 1)
-    
+    parser.add_argument('--config', type= str, default= 'train')
+    parser.add_argument('--data_root', type= str, default='data/train')
+    parser.add_argument('--checkpoint_dir', type= str, default= 'checkpoints')
+    parser.add_argument('--name_model', type= str, default= 'resnet101')
     opt = parser.parse_args()
     return opt
 
 
 if __name__ == '__main__':
     args = get_args_parser()
-    cfg = config[args.num_config]
-    
     start_time = time.time()
-    train(cfg= cfg)
+    train(args= args)
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
