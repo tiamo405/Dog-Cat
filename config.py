@@ -9,7 +9,7 @@ config = {
     #model
 
     NUM_CLASSES = 2,
-    LR = 1e-4,
+    LR = 1e-4, # 0.0001
     NUM_WORKERS = 2,
     NAME_LOSS = 'CrossEntropy', # 'BCEWithLogitsLoss', 'Poly1CrossEntropyLoss', 'ArcFace'
     WEIGHT_DECAY = 5e-4, # do not apply to batch_norm parameters

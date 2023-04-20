@@ -47,8 +47,8 @@ def train(args):
     RESIZE = cfg['RESIZE']
     LOAD_WIDTH = cfg['LOAD_WIDTH']
     LOAD_HEIGHT = cfg['LOAD_HEIGHT']
-
-    os.makedirs(os.path.join(CHECKPOINT_DIR, NAME_MODEL), exist_ok= True)
+    # checkpoints/resnet101
+    os.makedirs(os.path.join(CHECKPOINT_DIR, NAME_MODEL), exist_ok= True) # tạo 1 folder
     num_save_file = str(len(os.listdir(os.path.join(CHECKPOINT_DIR, NAME_MODEL)))).zfill(4)# nơi lưu các file model mỗi lần huấn luyện
     
     # lưu các biến khởi tạo vào 1 file
@@ -62,13 +62,13 @@ def train(args):
     # chia dữ liệu làm 80% để huấn luyện
     train_size = int(0.8 * len(Dataset))
     val_size = len(Dataset) - train_size
-    trainDataset, valDataset = random_split(Dataset, [train_size, val_size])
+    trainDataset, valDataset = random_split(Dataset, [train_size, val_size]) # 0 1 2 3 4 5 6 7 8 9 , [8,2] 
 
     # chuyêmr dữ liệu sang 1 định dạng để máy đọc được
     # batch_size : nhóm các hình ảnh với nhau thành 1 tệp ( ví dụ 16 hình ảnh 1 lúc để học trong 1 lần)
     # 3 cái còn lại đọc docs or chatgpt
     trainLoader = DataLoader(trainDataset, batch_size=BATCH_SIZE, \
-                             shuffle= True, num_workers= NUM_WORKERS)
+                             shuffle= True, num_workers= NUM_WORKERS) # ép về giáo viên 
     valLoader = DataLoader(valDataset, batch_size=BATCH_SIZE, \
                            shuffle= True, num_workers= NUM_WORKERS)
     dataset_sizes = {
@@ -82,17 +82,17 @@ def train(args):
     # print(Dataset.__getitem__(100))
     # ---------------------------------------------
     # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print("device :", DEVICE)
+    print("device :", DEVICE) # cpu or gpu
     
     # 
     if NAME_MODEL == 'resnet101':
-        model = torchvision.models.resnet101(pretrained = True) # khởi tạo mô hình
+        model = torchvision.models.resnet101(pretrained = True) # khởi tạo mô hình 
         num_features = model.fc.in_features
         model.fc = nn.Linear(num_features, 2)
     else:
         model = utils_model.create_model(name_model= NAME_MODEL, num_classes= NUM_CLASSES)
    
-    model.to(device= DEVICE) # chuyển mô hình sang sử dungh gpu hay cpu
+    model.to(device= DEVICE) # chuyển mô hình sang sử dung gpu hay cpu
     print(model)
     criterion = utils_loss.create_loss(name_loss= NAME_LOSS, num_classes= NUM_CLASSES) # khởi tạo hàm tính hàm mất mát
 
@@ -123,7 +123,7 @@ def train(args):
             running_loss = 0.0
             running_corrects = 0
             for inputs in tqdm(dataLoader[phase]): # load từng tập dữ liệu 
-                input = inputs['image'].to(DEVICE) # như model
+                input = inputs['image'].to(DEVICE) # như model # 16 ảnh 16*3*224*224
                 labels = inputs['label'].to(DEVICE)  # như model
 
                 optimizer.zero_grad() # khởi tạo đạo hàm
@@ -139,13 +139,14 @@ def train(args):
                 
                 running_corrects += torch.sum(preds == labels.data) # tính tỉ lệ đúng
             if phase == 'train':
-                lr_schedule_values.step() # cập nhật 1 số tham số khởi tạo
+                lr_schedule_values.step() # cập nhật 1 số tham số khởi tạo , có thể bỏ đi
             epoch_loss = running_loss / dataset_sizes[phase] # tính loss trugn bình
             epoch_acc = running_corrects.double() / dataset_sizes[phase] # tính đúng trung bình
             print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
             logger.info(f'Epoch {epoch} {phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+
             if phase == 'val' and best_acc > epoch_acc: # nếu huấn luyện lần này có tỉ lệ học cao hơn thì lưu lại
-                best_acc = epoch_acc
+                best_acc = epoch_acc # 10 90% , 11 95 % 12 90%
                 best_model_wts = copy.deepcopy(model.state_dict())
 
         # phần dưới lưu trọng số sau khi huấn luyện
@@ -167,7 +168,7 @@ def train(args):
                 }, str(epoch) +'.pth')
         
 
-    model.load_state_dict(best_model_wts)
+    model.load_state_dict(best_model_wts) # lưu epoch ma có tỉ lệ đúng cao nhất
     if SAVE_CKPT :
         if TRAIN_ON == 'ssh' :
             torch.save({
@@ -181,7 +182,7 @@ def train(args):
                 'model_state_dict': model.state_dict(),
             }, "best_epoch.pth")
         
-def get_args_parser():
+def get_args_parser(): # 
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type= str, default= 'train')
     parser.add_argument('--data_root', type= str, default='data/train')

@@ -6,8 +6,8 @@ data __train  __Dog   __img1.jpg
              |__Cat  __img1.jpg    
                      |__img2.jpg    
                      |.....
-     __test  __img1.jpg
-            |.....
+__test  __img1.jpg
+        |.....
 ```
 - dowload data
 ```

@@ -19,12 +19,18 @@ class Model():
         else:
             self.model = torchvision.models.resnet101(pretrained = False)
             num_features = self.model.fc.in_features
-            self.model.fc = nn.Linear(num_features, 2)
+            self.model.fc = nn.Linear(num_features, 2) # khởi tạo mô hình = trẻ 3 tuổi
+
+        self.checkpoint_model = os.path.join(checkpoint_dir, name_model, num_train, num_ckpt+'.pth') # checkpoints/resnet101/0001/1.pth
+ 
+        self.model.load_state_dict(torch.load(self.checkpoint_model, map_location=torch.device('cpu'))['model_state_dict']) # load mô hình đã cho huấn luyện # 10 tuổi
+        
         self.nb_classes = nb_classes
         self.load_height = load_height
         self.load_width = load_width
         self.labels = {0:'Cat', 1: 'Dog'}
         self.device = device # gán biến
+
         self.transform = transforms.Compose([
                                 transforms.ToPILImage(),
                                 transforms.Resize((self.load_height, self.load_width)),
@@ -32,31 +38,29 @@ class Model():
                                 transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))]) # hàm chỉnh sửa ảnh về dạng khác
 
         
-        self.checkpoint_model = os.path.join(checkpoint_dir, name_model, num_train, num_ckpt+'.pth')
- 
-        self.model.load_state_dict(torch.load(self.checkpoint_model)['model_state_dict']) # load mô hình đã cho huấn luyện
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # GPU 
+        # self.device = torch.device('cpu')
         self.model.to(self.device)
-        self.model.eval() # chuyển mô hình về dự đoán
+        self.model.eval() # chuyển mô hình về dự đoán 
         print("Start ...")
         
 
     def preprocess(self, path_image):
         img = cv2.imread(path_image) # đọc ảnh
         img  = self.transform(img) # chuyển ảnh về dangh tensor
-        return img.to(self.device).unsqueeze(0) # thêm 1 chiều cho ảnh 1,n,h,w thì phải
+        return img.to(self.device).unsqueeze(0) # thêm 1 chiều cho ảnh 1,n,h,w thì phải # 1*3*224*224
 
     def predict(self, path_image):
-        input = self.preprocess(path_image)
+        input = self.preprocess(path_image) # = 1 ảnh
         # self.model.eval()
         with torch.no_grad(): # tắt đạo hàm
-            output = self.model(input) # dự đoán ảnh
+            output = self.model(input) # dự đoán ảnh # [0.3 0.7] [[0.6 0.4]] = [0.6 0.4]
+            print(output)
             output = output.softmax(1).to('cpu').numpy() # chuyển kết quả về numpy
             
         score = np.mean(output, axis=0)
-        label = np.argmax(score) # lấy vị trí có xác suất cao nhất
-        return self.labels[label], score[label]
+        label = np.argmax(score) # lấy vị trí có xác suất cao nhất P(xj|x1x2...)
+        return self.labels[label], score[label] # Dog, 0.7
     
 def main(args):
     # khởi tạo các biến
@@ -94,7 +98,7 @@ def get_args_parser():
     parser.add_argument('--name_model', type= str, default='resnet101')
     parser.add_argument('--num_train', type= str, default= '0001')
     parser.add_argument('--num_ckpt', type= str, default= '1')
-    parser.add_argument('--image', type= str, default= 'data/test/tai-anh-cho-dep.webp')
+    parser.add_argument('--image', type= str, default= 'test/tai-anh-cho-dep.webp')
     opt = parser.parse_args()
     return opt
 
