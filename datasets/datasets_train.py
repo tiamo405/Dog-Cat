@@ -24,8 +24,9 @@ class DatasetDogCat(data.Dataset) :
 
         for label in os.listdir(self.path_data) : # data/train = ['Cat', 'Dog'] 'data', 'train' = data/train
             for fname in os.listdir(os.path.join(self.path_data, label)) : #os.path.join(self.path_data, label)  =  data/train/Cat
-                path_images.append(os.path.join(self.path_data, label, fname))
-                labels.append(dict_class[label]) # cho meo, 1 0
+                if '.jpg' in fname or '.png' in fname :
+                    path_images.append(os.path.join(self.path_data, label, fname))
+                    labels.append(dict_class[label]) # cho meo, 1 0
         
         self.path_images = path_images
         self.labels = labels

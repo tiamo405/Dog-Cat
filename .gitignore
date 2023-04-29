@@ -161,6 +161,7 @@ checkpoints/
 data/
 __pycache__/
 results/
+test-data/
 
 *.pth
 *.jpg
@@ -171,3 +172,4 @@ results/
 *.tar
 *.mp4
 *.mp3
+*.db

@@ -20,10 +20,11 @@ class Model():
             self.model = torchvision.models.resnet101(pretrained = False)
             num_features = self.model.fc.in_features
             self.model.fc = nn.Linear(num_features, 2) # khởi tạo mô hình = trẻ 3 tuổi
+        self.model.to(self.device)
 
         self.checkpoint_model = os.path.join(checkpoint_dir, name_model, num_train, num_ckpt+'.pth') # checkpoints/resnet101/0001/1.pth
  
-        self.model.load_state_dict(torch.load(self.checkpoint_model, map_location=torch.device('cpu'))['model_state_dict']) # load mô hình đã cho huấn luyện # 10 tuổi
+        self.model.load_state_dict(torch.load(self.checkpoint_model, map_location=torch.device(self.device))['model_state_dict']) # load mô hình đã cho huấn luyện # 10 tuổi
         
         self.nb_classes = nb_classes
         self.load_height = load_height
@@ -40,7 +41,6 @@ class Model():
         
         # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # GPU 
         # self.device = torch.device('cpu')
-        self.model.to(self.device)
         self.model.eval() # chuyển mô hình về dự đoán 
         print("Start ...")
         
