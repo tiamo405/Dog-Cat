@@ -15,6 +15,11 @@ bash dowload_data.sh
 ```
 # 2. Train
 ```
+Cài đặt các thư viện như pytorch, numpy, opencv-python, tdqm, torchvision ...
+Khuyến khích sử dụng anaconda
+```
+
+```
 python train.py --data_root data/train --name_model resnet101 --checkpoint_dir checkpoints
 ```
 - folder weight :
@@ -36,5 +41,5 @@ python predict.py --checkpoint_dir checkpoints --name_model resnet101 --num_trai
 drive/weight/DandC/resnet101/0001/1.pth
 ```
 [Dowload pretrained](https://drive.google.com/drive/folders/1kSdUx6yzp7eEaAJrdeA_gsLfgCLT5uWq?usp=sharing)
-# Colab
+# 4.Colab
 [Colab demo](https://colab.research.google.com/drive/1bSoSouDuzIPWZ713MrssSIkX_VepZBwW?usp=sharing)
