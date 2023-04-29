@@ -14,12 +14,11 @@ class Model():
     
     def __init__(self, name_model, nb_classes, load_height, load_width ,
                  checkpoint_dir, num_train, num_ckpt, device):
-        if name_model == 'resnet50':
-            self.model = utils_model.create_model(name_model= 'resnet50', num_classes= nb_classes) # gọi mô hình
-        else:
-            self.model = torchvision.models.resnet101(pretrained = False)
-            num_features = self.model.fc.in_features
-            self.model.fc = nn.Linear(num_features, 2) # khởi tạo mô hình = trẻ 3 tuổi
+
+        self.model = torchvision.models.resnet101(pretrained = False)
+        num_features = self.model.fc.in_features
+        self.model.fc = nn.Linear(num_features, 2) # khởi tạo mô hình = trẻ 3 tuổi
+        self.device = device # gán biến
         self.model.to(self.device)
 
         self.checkpoint_model = os.path.join(checkpoint_dir, name_model, num_train, num_ckpt+'.pth') # checkpoints/resnet101/0001/1.pth
@@ -30,7 +29,6 @@ class Model():
         self.load_height = load_height
         self.load_width = load_width
         self.labels = {0:'Cat', 1: 'Dog'}
-        self.device = device # gán biến
 
         self.transform = transforms.Compose([
                                 transforms.ToPILImage(),
@@ -55,7 +53,6 @@ class Model():
         # self.model.eval()
         with torch.no_grad(): # tắt đạo hàm
             output = self.model(input) # dự đoán ảnh # [0.3 0.7] [[0.6 0.4]] = [0.6 0.4]
-            print(output)
             output = output.softmax(1).to('cpu').numpy() # chuyển kết quả về numpy
             
         score = np.mean(output, axis=0)
