@@ -91,7 +91,7 @@ def main(args):
 def get_args_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_config', type= str, default= 'test')
-    parser.add_argument('--checkpoint_dir', type=str, default='checkpoints')
+    parser.add_argument('--checkpoint_dir', type=str, default='checkpoint')
     parser.add_argument('--name_model', type= str, default='resnet101')
     parser.add_argument('--num_train', type= str, default= '0001')
     parser.add_argument('--num_ckpt', type= str, default= '1')

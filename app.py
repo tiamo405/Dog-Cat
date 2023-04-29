@@ -13,7 +13,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def classify(fname):
     cfg = config['test']
 
-    CHECKPOINT_DIR = 'checkpoints'
+    CHECKPOINT_DIR = 'checkpoint'
     # model
     NAME_MODEL = 'resnet101'
     NUM_CLASSES = cfg['NUM_CLASSES']

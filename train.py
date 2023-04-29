@@ -186,7 +186,7 @@ def get_args_parser(): #
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type= str, default= 'train')
     parser.add_argument('--data_root', type= str, default='data/train')
-    parser.add_argument('--checkpoint_dir', type= str, default= 'checkpoints')
+    parser.add_argument('--checkpoint_dir', type= str, default= 'checkpoint')
     parser.add_argument('--name_model', type= str, default= 'resnet101')
     opt = parser.parse_args()
     return opt
